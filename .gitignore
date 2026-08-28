@@ -1,0 +1,10 @@
+# 构建产物与本地文件
+.build/
+build/
+DerivedData/
+xcuserdata/
+*.ipa
+.DS_Store
+
+# xcodegen 生成的工程文件（CI 上由 project.yml 重新生成）
+Suishou.xcodeproj/
