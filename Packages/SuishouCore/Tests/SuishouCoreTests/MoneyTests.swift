@@ -1,5 +1,5 @@
 import XCTest
-@testable import Core
+@testable import SuishouCore
 
 final class MoneyTests: XCTestCase {
 

@@ -7,8 +7,8 @@ options:
   createIntermediateGroups: true
 
 packages:
-  Core:
-    path: Packages/Core
+  SuishouCore:
+    path: Packages/SuishouCore
 
 settings:
   base:
@@ -25,7 +25,7 @@ targets:
     sources:
       - path: App/Sources
     dependencies:
-      - package: Core
+      - package: SuishouCore
     info:
       path: App/Info.plist
       properties:

@@ -112,17 +112,7 @@ struct CategoryEditSheet: View {
                 Section("图标") {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 12) {
                         ForEach(Self.iconChoices, id: \.self) { choice in
-                            Button {
-                                icon = choice
-                            } label: {
-                                Image(systemName: choice)
-                                    .font(.system(size: 19))
-                                    .frame(width: 40, height: 40)
-                                    .background(icon == choice ? Color.accentColor.opacity(0.15) : Color(.systemGray5),
-                                                in: RoundedRectangle(cornerRadius: 10))
-                                    .foregroundStyle(icon == choice ? .tint : .primary)
-                            }
-                            .buttonStyle(.plain)
+                            iconChoiceButton(choice)
                         }
                     }
                 }
@@ -154,7 +144,7 @@ struct CategoryEditSheet: View {
                 .font(.system(size: 19))
                 .frame(width: 40, height: 40)
                 .background(background, in: RoundedRectangle(cornerRadius: 10))
-                .foregroundStyle(selected ? .tint : .primary)
+                .foregroundStyle(selected ? Color.accentColor : Color.primary)
         }
         .buttonStyle(.plain)
     }

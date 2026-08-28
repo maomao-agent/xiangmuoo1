@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import SuishouCore
 
 /// 明细页（PRD §4 首页）：月份切换 + 当月汇总 + 按日分组流水 + 搜索
 struct HomeView: View {

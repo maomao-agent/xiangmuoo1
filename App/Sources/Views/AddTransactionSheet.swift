@@ -1,6 +1,6 @@
 import SwiftUI
 import SwiftData
-import Core
+import SuishouCore
 
 /// 记账 / 编辑页（PRD F4：3 秒手动记账 —— 大数字键盘 + 分类宫格）
 struct AddTransactionSheet: View {
@@ -153,7 +153,7 @@ struct AddTransactionSheet: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 10)
             .background(background, in: RoundedRectangle(cornerRadius: 12))
-            .foregroundStyle(selected ? .tint : .primary)
+            .foregroundStyle(selected ? Color.accentColor : Color.primary)
         }
         .buttonStyle(.plain)
     }
@@ -193,22 +193,27 @@ struct AddTransactionSheet: View {
                 }
             }
         } label: {
-            let current = accounts.first { $0.uid == selection.wrappedValue }
-            return HStack(spacing: 10) {
-                Image(systemName: current?.kind.icon ?? "creditcard")
-                    .foregroundStyle(.tint)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title).font(.caption).foregroundStyle(.secondary)
-                    Text(current?.name ?? "未选择").font(.body)
-                }
-                Spacer()
-                Image(systemName: "chevron.up.chevron.down")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
-            }
-            .padding(12)
-            .background(Color(uiColor: .systemGray6), in: RoundedRectangle(cornerRadius: 12))
+            accountMenuLabel(title: title,
+                             current: accounts.first { $0.uid == selection.wrappedValue })
         }
+    }
+
+    /// 账户选择器标签（ViewBuilder 闭包不允许显式 return，拆成独立函数）
+    private func accountMenuLabel(title: String, current: Account?) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: current?.kind.icon ?? "creditcard")
+                .foregroundStyle(.tint)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.caption).foregroundStyle(.secondary)
+                Text(current?.name ?? "未选择").font(.body)
+            }
+            Spacer()
+            Image(systemName: "chevron.up.chevron.down")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+        }
+        .padding(12)
+        .background(Color(uiColor: .systemGray6), in: RoundedRectangle(cornerRadius: 12))
     }
 
     // MARK: - 保存
