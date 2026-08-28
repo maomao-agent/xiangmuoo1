@@ -52,6 +52,7 @@ enum AccountKind: String, Codable, CaseIterable {
 /// 分类（支出/收入共用一张表，isExpense 区分；PRD §5）
 @Model
 final class Category {
+    @Attribute(.unique) var uid: UUID = UUID()
     var name: String
     var icon: String        // SF Symbol 名称
     var isExpense: Bool
@@ -74,6 +75,7 @@ final class Category {
 /// 账户（现金/微信/支付宝/银行卡）
 @Model
 final class Account {
+    @Attribute(.unique) var uid: UUID = UUID()
     var name: String
     var kindRaw: String
     var sort: Int

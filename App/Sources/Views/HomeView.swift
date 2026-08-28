@@ -45,9 +45,16 @@ struct HomeView: View {
         monthTransactions.filter { $0.type == .income }.reduce(Decimal.zero) { $0 + $1.amount }
     }
 
-    private var dayGroups: [(day: Date, items: [Transaction])] {
+    /// 按日分组（Swift key path 不支持元组成员，用结构体承载）
+    private struct DayGroup: Identifiable {
+        let day: Date
+        let items: [Transaction]
+        var id: Date { day }
+    }
+
+    private var dayGroups: [DayGroup] {
         let groups = Dictionary(grouping: monthTransactions) { calendar.startOfDay(for: $0.date) }
-        return groups.keys.sorted(by: >).map { (day: $0, items: groups[$0] ?? []) }
+        return groups.keys.sorted(by: >).map { DayGroup(day: $0, items: groups[$0] ?? []) }
     }
 
     var body: some View {
