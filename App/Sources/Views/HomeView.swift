@@ -59,7 +59,7 @@ struct HomeView: View {
                                            description: Text("点下方“记一笔”开始记录"))
                         .listRowBackground(Color.clear)
                 } else {
-                    ForEach(dayGroups, id: \.day) { group in
+                    ForEach(dayGroups) { group in
                         Section {
                             ForEach(group.items) { item in
                                 Button { editing = item } label: {

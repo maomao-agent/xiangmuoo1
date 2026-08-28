@@ -5,12 +5,14 @@ import SwiftData
 
 struct CategoryManageView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: [SortDescriptor(\Category.isExpense), SortDescriptor(\Category.sort)])
+    @Query(sort: \Category.sort)
     private var categories: [Category]
 
     @State private var adding = false
     @State private var editing: Category?
     @State private var denyMessage: String?
+
+    init() {}
 
     var body: some View {
         List {
