@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import Core
 
 /// 记账 / 编辑页（PRD F4：3 秒手动记账 —— 大数字键盘 + 分类宫格）
 struct AddTransactionSheet: View {
@@ -15,9 +16,9 @@ struct AddTransactionSheet: View {
     @State private var amountString = ""
     @State private var note = ""
     @State private var date = Date()
-    @State private var categoryID: PersistentIdentifier?
-    @State private var accountID: PersistentIdentifier?
-    @State private var toAccountID: PersistentIdentifier?
+    @State private var categoryID: UUID?
+    @State private var accountID: UUID?
+    @State private var toAccountID: UUID?
 
     @FocusState private var noteFocused: Bool
 
@@ -29,9 +30,9 @@ struct AddTransactionSheet: View {
             .replacingOccurrences(of: ",", with: ""))
         _note = State(initialValue: t.note)
         _date = State(initialValue: t.date)
-        _categoryID = State(initialValue: t.category?.persistentModelID)
-        _accountID = State(initialValue: t.account?.persistentModelID)
-        _toAccountID = State(initialValue: t.toAccount?.persistentModelID)
+        _categoryID = State(initialValue: t.category?.uid)
+        _accountID = State(initialValue: t.account?.uid)
+        _toAccountID = State(initialValue: t.toAccount?.uid)
     }
 
     // MARK: - 派生值
@@ -44,15 +45,15 @@ struct AddTransactionSheet: View {
 
     /// 类型切换后旧分类不再匹配（如支出分类配收入类型）→ 视为未选
     private var selectedCategory: Category? {
-        categories.first { $0.persistentModelID == categoryID && $0.isExpense == (type == .expense) }
+        categories.first { $0.uid == categoryID && $0.isExpense == (type == .expense) }
     }
 
     private var selectedAccount: Account? {
-        accounts.first { $0.persistentModelID == accountID }
+        accounts.first { $0.uid == accountID }
     }
 
     private var selectedToAccount: Account? {
-        accounts.first { $0.persistentModelID == toAccountID }
+        accounts.first { $0.uid == toAccountID }
     }
 
     private var canSave: Bool {
@@ -62,7 +63,7 @@ struct AddTransactionSheet: View {
             return selectedCategory != nil
         case .transfer:
             guard let from = selectedAccount, let to = selectedToAccount else { return false }
-            return from.persistentModelID != to.persistentModelID
+            return from.uid != to.uid
         }
     }
 
@@ -131,23 +132,30 @@ struct AddTransactionSheet: View {
     private var categorySection: some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 4), spacing: 10) {
             ForEach(availableCategories) { c in
-                let selected = c.persistentModelID == categoryID
-                Button {
-                    categoryID = selected ? nil : c.persistentModelID
-                } label: {
-                    VStack(spacing: 6) {
-                        Image(systemName: c.icon).font(.system(size: 19))
-                        Text(c.name).font(.caption)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 10)
-                    .background(selected ? Color.accentColor.opacity(0.15) : Color(.systemGray6),
-                                in: RoundedRectangle(cornerRadius: 12))
-                    .foregroundStyle(selected ? .tint : .primary)
-                }
-                .buttonStyle(.plain)
+                categoryCell(c)
             }
         }
+    }
+
+    /// 单个分类宫格（拆成独立函数，避免长表达式类型推断超时）
+    private func categoryCell(_ c: Category) -> some View {
+        let selected = c.uid == categoryID
+        let background: Color = selected
+            ? Color.accentColor.opacity(0.15)
+            : Color(uiColor: .systemGray6)
+        return Button {
+            categoryID = selected ? nil : c.uid
+        } label: {
+            VStack(spacing: 6) {
+                Image(systemName: c.icon).font(.system(size: 19))
+                Text(c.name).font(.caption)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+            .background(background, in: RoundedRectangle(cornerRadius: 12))
+            .foregroundStyle(selected ? .tint : .primary)
+        }
+        .buttonStyle(.plain)
     }
 
     private var transferSection: some View {
@@ -168,25 +176,25 @@ struct AddTransactionSheet: View {
                     .focused($noteFocused)
             }
             .padding(12)
-            .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: 12))
+            .background(Color(uiColor: .systemGray6), in: RoundedRectangle(cornerRadius: 12))
 
             DatePicker("时间", selection: $date)
                 .padding(12)
-                .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: 12))
+                .background(Color(uiColor: .systemGray6), in: RoundedRectangle(cornerRadius: 12))
         }
     }
 
-    private func accountMenu(_ title: String, selection: Binding<PersistentIdentifier?>) -> some View {
+    private func accountMenu(_ title: String, selection: Binding<UUID?>) -> some View {
         Menu {
             Picker(title, selection: selection) {
-                Text("未选择").tag(PersistentIdentifier?.none)
+                Text("未选择").tag(UUID?.none)
                 ForEach(accounts) { account in
-                    Text(account.name).tag(account.persistentModelID as PersistentIdentifier?)
+                    Text(account.name).tag(account.uid as UUID?)
                 }
             }
         } label: {
-            let current = accounts.first { $0.persistentModelID == selection.wrappedValue }
-            HStack(spacing: 10) {
+            let current = accounts.first { $0.uid == selection.wrappedValue }
+            return HStack(spacing: 10) {
                 Image(systemName: current?.kind.icon ?? "creditcard")
                     .foregroundStyle(.tint)
                 VStack(alignment: .leading, spacing: 2) {
@@ -199,7 +207,7 @@ struct AddTransactionSheet: View {
                     .foregroundStyle(.tertiary)
             }
             .padding(12)
-            .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: 12))
+            .background(Color(uiColor: .systemGray6), in: RoundedRectangle(cornerRadius: 12))
         }
     }
 

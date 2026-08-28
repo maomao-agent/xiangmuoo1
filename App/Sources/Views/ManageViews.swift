@@ -139,6 +139,24 @@ struct CategoryEditSheet: View {
         .presentationDetents([.medium, .large])
     }
 
+    /// 单个图标选项（拆分独立函数，避免长表达式类型推断超时）
+    private func iconChoiceButton(_ choice: String) -> some View {
+        let selected = icon == choice
+        let background: Color = selected
+            ? Color.accentColor.opacity(0.15)
+            : Color(uiColor: .systemGray5)
+        return Button {
+            icon = choice
+        } label: {
+            Image(systemName: choice)
+                .font(.system(size: 19))
+                .frame(width: 40, height: 40)
+                .background(background, in: RoundedRectangle(cornerRadius: 10))
+                .foregroundStyle(selected ? .tint : .primary)
+        }
+        .buttonStyle(.plain)
+    }
+
     private func save() {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
         if let c = editing {
@@ -162,6 +180,8 @@ struct AccountManageView: View {
     @State private var adding = false
     @State private var editing: Account?
     @State private var denyMessage: String?
+
+    init() {}
 
     var body: some View {
         List {

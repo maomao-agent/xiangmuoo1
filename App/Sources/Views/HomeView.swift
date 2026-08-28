@@ -11,6 +11,8 @@ struct HomeView: View {
     @State private var editing: Transaction?
     @State private var showingAdd = false
 
+    init() {}
+
     private var calendar: Calendar { .current }
 
     private var monthStart: Date {

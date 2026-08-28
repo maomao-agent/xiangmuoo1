@@ -96,6 +96,7 @@ final class Account {
 /// 流水（金额恒为正数，方向由 type 决定；金额一律 Decimal，PRD §5）
 @Model
 final class Transaction {
+    @Attribute(.unique) var uid: UUID = UUID()
     var amount: Decimal
     var typeRaw: String
     var date: Date

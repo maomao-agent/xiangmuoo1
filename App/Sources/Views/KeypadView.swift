@@ -1,4 +1,5 @@
 import SwiftUI
+import Core
 
 /// 大数字键盘：所有输入经 Money.keypad 规则校验（PRD F4）
 struct KeypadView: View {
