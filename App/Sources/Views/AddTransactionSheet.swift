@@ -11,6 +11,7 @@ struct AddTransactionSheet: View {
     @Query(sort: \Account.sort) private var accounts: [Account]
 
     private let editing: Transaction?
+    private let presetSource: EntrySource
 
     @State private var type: TransactionType = .expense
     @State private var amountString = ""
@@ -22,17 +23,28 @@ struct AddTransactionSheet: View {
 
     @FocusState private var noteFocused: Bool
 
-    init(editing: Transaction? = nil) {
+    init(editing: Transaction? = nil, preset: ShortcutEntry? = nil) {
         self.editing = editing
-        guard let t = editing else { return }
-        _type = State(initialValue: t.type)
-        _amountString = State(initialValue: Money.format(t.amount, showSymbol: false)
-            .replacingOccurrences(of: ",", with: ""))
-        _note = State(initialValue: t.note)
-        _date = State(initialValue: t.date)
-        _categoryID = State(initialValue: t.category?.uid)
-        _accountID = State(initialValue: t.account?.uid)
-        _toAccountID = State(initialValue: t.toAccount?.uid)
+        self.presetSource = preset != nil ? .shortcut : .manual
+        if let t = editing {
+            _type = State(initialValue: t.type)
+            _amountString = State(initialValue: Money.format(t.amount, showSymbol: false)
+                .replacingOccurrences(of: ",", with: ""))
+            _note = State(initialValue: t.note)
+            _date = State(initialValue: t.date)
+            _categoryID = State(initialValue: t.category?.uid)
+            _accountID = State(initialValue: t.account?.uid)
+            _toAccountID = State(initialValue: t.toAccount?.uid)
+        } else if let p = preset {
+            // 快捷指令预填：金额/备注/类型已带好，只等用户点分类确认（PRD F2）
+            _type = State(initialValue: p.type == "income" ? .income : .expense)
+            _amountString = State(initialValue: Money.format(p.amount, showSymbol: false)
+                .replacingOccurrences(of: ",", with: ""))
+            _note = State(initialValue: p.note)
+            if let d = p.date {
+                _date = State(initialValue: d)
+            }
+        }
     }
 
     // MARK: - 派生值
@@ -234,7 +246,7 @@ struct AddTransactionSheet: View {
                                 type: type,
                                 date: date,
                                 note: note,
-                                source: .manual,
+                                source: presetSource,
                                 category: selectedCategory,
                                 account: selectedAccount,
                                 toAccount: type == .transfer ? selectedToAccount : nil)

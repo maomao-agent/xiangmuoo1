@@ -11,7 +11,7 @@ struct SettingsView: View {
                 }
 
                 Section("数据") {
-                    LabeledContent("快捷指令接入", value: "M2 里程碑")
+                    NavigationLink("快捷指令接入指南", destination: ShortcutGuideView())
                     LabeledContent("账单 CSV 导入", value: "M3 里程碑")
                     LabeledContent("导出 CSV", value: "M5 里程碑")
                 }
