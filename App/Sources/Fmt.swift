@@ -24,6 +24,15 @@ enum Fmt {
         monthFormatter.string(from: date)
     }
 
+    /// 短月份标签，如 "8月"（趋势图用）
+    static func monthShort(_ date: Date) -> String {
+        "\(calendarMonth(date))月"
+    }
+
+    private static func calendarMonth(_ date: Date) -> Int {
+        Calendar.current.component(.month, from: date)
+    }
+
     static func dayHeader(_ date: Date) -> String {
         let calendar = Calendar.current
         if calendar.isDateInToday(date) { return "今天" }

@@ -17,7 +17,7 @@ struct SettingsView: View {
                 }
 
                 Section("关于") {
-                    LabeledContent("版本", value: "0.1.0（M1）")
+                    LabeledContent("版本", value: "0.2.0（M1-M2）")
                     LabeledContent("数据存储", value: "仅保存在本机")
                 }
             }

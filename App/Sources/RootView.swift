@@ -13,8 +13,7 @@ struct RootView: View {
             HomeView()
                 .tabItem { Label("明细", systemImage: "list.bullet.rectangle") }
 
-            ContentUnavailableView("统计", systemImage: "chart.pie",
-                                   description: Text("将在 M4 里程碑提供"))
+            StatisticsView()
                 .tabItem { Label("统计", systemImage: "chart.pie") }
 
             SettingsView()
